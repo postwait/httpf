@@ -210,19 +210,6 @@ httpf_detach_cb(sof_handle_t handle, void *cookie, cred_t *cr)
 }
 
 /*
- * Outgoing connections are not of interest, so just bypass the filter.
- */
-sof_rval_t
-httpf_connect_cb(sof_handle_t handle, void *cookie, struct sockaddr *name,
-    socklen_t *namelen, cred_t *cr)
-{
-	_NOTE(ARGUNUSED(cookie, name, namelen, cr));
-
-	sof_bypass(handle);
-	return (SOF_RVAL_CONTINUE);
-}
-
-/*
  * Called for each incoming segment.
  */
 mblk_t *
