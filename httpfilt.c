@@ -24,7 +24,6 @@
 
 #include <sys/kmem.h>
 #include <sys/systm.h>
-#include <sys/cmn_err.h>
 #include <sys/stropts.h>
 #include <sys/strsun.h>
 #include <sys/socketvar.h>
@@ -199,7 +198,6 @@ httpf_bind_cb(sof_handle_t handle, void *cookie, struct sockaddr *name,
 
 	_NOTE(ARGUNUSED(cr));
 
-	/* cmn_err(CE_NOTE,"httpf: bind\n"); */
 	return (SOF_RVAL_CONTINUE);
 }
 
@@ -210,7 +208,6 @@ httpf_listen_cb(sof_handle_t handle, void *cookie, int *backlog, cred_t *cr)
 
 	_NOTE(ARGUNUSED(backlog, cr));
 
-	/* cmn_err(CE_NOTE,"httpf: listen\n"); */
 	return (SOF_RVAL_CONTINUE);
 
 }
@@ -268,7 +265,6 @@ _init(void)
 {
         int error;
 
-	cmn_err(CE_NOTE,"Loading HTTP accept filter\n");
         if ((error = sof_register(SOF_VERSION, HTTPFILT_MODULE,
             &httpf_ops, 0)) != 0)
                 return (error);
