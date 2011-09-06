@@ -55,12 +55,6 @@ dataf_attach_passive_cb(sof_handle_t handle, sof_handle_t ph,
 	return (SOF_RVAL_DEFER);
 }
 
-void
-dataf_detach_cb(sof_handle_t handle, void *cookie, cred_t *cr)
-{
-	_NOTE(ARGUNUSED(handle, cookie, cr));
-}
-
 /*
  * Called for each incoming segment.
  */
@@ -78,7 +72,6 @@ dataf_data_in_cb(sof_handle_t handle, void *cookie, mblk_t *mp, int flags,
 
 sof_ops_t dataf_ops = {
 	.sofop_attach_passive = dataf_attach_passive_cb,
-	.sofop_detach = dataf_detach_cb,
 	.sofop_data_in = dataf_data_in_cb,
 };
 
