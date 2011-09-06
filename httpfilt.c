@@ -85,12 +85,12 @@ typedef struct httpf {
 static const char *
 httpf_method_name(int m) {
 	switch(m) {
-		case HTTPF_METHOD_INVALID: return "invalid";
-		case HTTPF_METHOD_UNSET: return "unset";
-		case HTTPF_METHOD_GET: return "GET";
-		case HTTPF_METHOD_HEAD: return "HEAD";
-		case HTTPF_METHOD_PUT: return "PUT";
-		case HTTPF_METHOD_POST: return "POST";
+	case HTTPF_METHOD_INVALID: return "invalid";
+	case HTTPF_METHOD_UNSET: return "unset";
+	case HTTPF_METHOD_GET: return "GET";
+	case HTTPF_METHOD_HEAD: return "HEAD";
+	case HTTPF_METHOD_PUT: return "PUT";
+	case HTTPF_METHOD_POST: return "POST";
 	}
 	return "unknown";
 }
