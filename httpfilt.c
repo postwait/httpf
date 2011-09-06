@@ -100,7 +100,6 @@ httpf_method_from_ff(uint32_t ffw)
 {
 	switch (ffw) {
 	case WORD_GET:
-	case WORD_GET_TAB:
 		return (HTTPF_METHOD_GET);
 	case WORD_PUT:
 		return (HTTPF_METHOD_PUT);
