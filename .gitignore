@@ -1,3 +1,7 @@
+datafilt_amd64.lo
+datafilt_amd64_mod
+datafilt_i386.lo
+datafilt_i386_mod
 httpfilt_amd64.lo
 httpfilt_amd64_mod
 httpfilt_i386.lo
