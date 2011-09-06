@@ -1,0 +1,5 @@
+httpfilt_amd64.lo
+httpfilt_amd64_mod
+httpfilt_i386.lo
+httpfilt_i386_mod
+testserv
