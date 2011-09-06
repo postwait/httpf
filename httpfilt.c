@@ -144,7 +144,7 @@ httpf_process_input(httpf_t *httpf, mblk_t *mp) {
 	int i, dlen = MBLKL(mp);
 	for(i=0; i<dlen; i++) {
 		/* Collect the first four bytes for a protocol validation */
-		if(httpf->httpf_method == HTTPF_METHOD_UNSET &&
+		if (httpf->httpf_method == HTTPF_METHOD_UNSET &&
 		    httpf->httpf_bytes_in < 4)
 			httpf->httpf_ff[httpf->httpf_bytes_in] = mp->b_rptr[i];
 
@@ -152,20 +152,18 @@ httpf_process_input(httpf_t *httpf, mblk_t *mp) {
 
 		/* if we haven't yet determined out HTTP method, do it at
                    exactly 4 bytes into the stream. */
-		if(httpf->httpf_method == HTTPF_METHOD_UNSET &&
+		if (httpf->httpf_method == HTTPF_METHOD_UNSET &&
 		    httpf->httpf_bytes_in == 4) {
 			/* if we find no good method, we can't defer this stream */
 			httpf->httpf_method = httpf_method_from_ff(httpf->httpf_ffw);
-			if(httpf->httpf_method == HTTPF_METHOD_INVALID)
+			if (httpf->httpf_method == HTTPF_METHOD_INVALID)
 				return -1;
 		}
 
 		/* if the method is set, start looking for either \r\n\r\n or \n\n */
-		if(httpf->httpf_method > HTTPF_METHOD_UNSET) {
-			if(httpf_progress_crlfcrlf_state(httpf, mp->b_rptr[i]) == 0) {
+		if (httpf->httpf_method > HTTPF_METHOD_UNSET)
+			if (httpf_progress_crlfcrlf_state(httpf, mp->b_rptr[i]) == 0)
 				return 1;
-			}
-		}
 	}
 	return 0;
 }
@@ -242,10 +240,10 @@ httpf_data_in_cb(sof_handle_t handle, void *cookie, mblk_t *mp, int flags,
 
 	if (mp == NULL) return (mp);
 
-	if(httpf_process_input(httpf, mp))
+	if (httpf_process_input(httpf, mp))
 		sof_newconn_ready(handle);
 
-	if(httpf->httpf_bytes_in > MAX_HTTP_FILTER_SIZE)
+	if (httpf->httpf_bytes_in > MAX_HTTP_FILTER_SIZE)
 		sof_newconn_ready(handle);
 
 	return mp;
