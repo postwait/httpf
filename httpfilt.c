@@ -128,7 +128,7 @@ httpf_process_input(httpf_t *httpf, mblk_t *mp) {
 		if(httpf->httpf_method == HTTPF_METHOD_UNSET &&
 		    httpf->httpf_bytes_in == 4) {
 			/* if we find no good method, we can't defer this stream */
-			httpf->httpf_method = httpf_method_from_ff(httpf->httpf_ff);
+			httpf->httpf_method = httpf_method_from_ff(httpf->httpf_ffw);
 			if(httpf->httpf_method == HTTPF_METHOD_INVALID)
 				return -1;
 		}
