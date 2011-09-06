@@ -41,8 +41,8 @@ install:	httpfilt_amd64_mod httpfilt_i386_mod
 	cp datafilt_i386_mod /kernel/socketmod/dataf
 
 unload:
-	soconfig -F httpf
-	soconfig -F dataf
+	-soconfig -F httpf
+	-soconfig -F dataf
 
 load:	install
 	soconfig -F httpf httpf prog 2:2:0,2:2:6,26:2:0,26:2:6
