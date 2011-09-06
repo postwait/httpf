@@ -113,6 +113,56 @@ httpf_method_from_ff(uint32_t ffw)
 	return (HTTPF_METHOD_INVALID);
 }
 
+static int
+httpf_process_input(httpf_t *httpf, mblk_t *mp) {
+	int i, dlen = MBLKL(mp);
+	for(i=0; i<dlen; i++) {
+		/* Collect the first four bytes for a protocol validation */
+		if(httpf->httpf_method == HTTPF_METHOD_UNSET &&
+		    httpf->httpf_bytes_in < 4)
+			httpf->httpf_ff[httpf->httpf_bytes_in] = mp->b_rptr[i];
+
+		httpf->httpf_bytes_in++;
+
+		/* if we haven't yet determined out HTTP method, do it at
+                   exactly 4 bytes into the stream. */
+		if(httpf->httpf_method == HTTPF_METHOD_UNSET &&
+		    httpf->httpf_bytes_in == 4) {
+			/* if we find no good method, we can't defer this stream */
+			httpf->httpf_method = httpf_method_from_ff(httpf->httpf_ff);
+			if(httpf->httpf_method == HTTPF_METHOD_INVALID)
+				return -1;
+		}
+
+		/* if the method is set, start looking for either \r\n\r\n or \n\n */
+#define HTTPF_STATE(a) httpf->httpf_sm = (a)
+#define IF_HTTPF_TOKEN(a) if (mp->b_rptr[i] == (a))
+		if(httpf->httpf_method > HTTPF_METHOD_UNSET) {
+			switch(httpf->httpf_sm) {
+				case 0:
+					IF_HTTPF_TOKEN('\r') HTTPF_STATE(1);
+					IF_HTTPF_TOKEN('\n') HTTPF_STATE(3);
+					break;
+				case 1:
+					IF_HTTPF_TOKEN('\n') HTTPF_STATE(2);
+					else HTTPF_STATE(0);
+					break;
+				case 2:
+					IF_HTTPF_TOKEN('\n') return 1;
+					IF_HTTPF_TOKEN('\r') HTTPF_STATE(3);
+					else HTTPF_STATE(0);
+					break;
+				case 3:
+					IF_HTTPF_TOKEN('\n') return 1;
+					IF_HTTPF_TOKEN('\r') HTTPF_STATE(1);
+					else HTTPF_STATE(0);
+					break;
+			}
+		}
+	}
+	return 0;
+}
+
 /*
  * Allocate httpf state
  */
