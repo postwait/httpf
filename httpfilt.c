@@ -113,6 +113,33 @@ httpf_method_from_ff(uint32_t ffw)
 }
 
 static int
+httpf_progress_crlfcrlf_state(httpf_t *httpf, unsigned char ch) {
+#define HTTPF_STATE(a) httpf->httpf_sm = (a)
+#define IF_HTTPF_TOKEN(a) if ((ch) == (a))
+	switch(httpf->httpf_sm) {
+	case 0:
+		IF_HTTPF_TOKEN('\r') HTTPF_STATE(1);
+		IF_HTTPF_TOKEN('\n') HTTPF_STATE(3);
+		break;
+	case 1:
+		IF_HTTPF_TOKEN('\n') HTTPF_STATE(2);
+		else HTTPF_STATE(0);
+		break;
+	case 2:
+		IF_HTTPF_TOKEN('\n') return 0;
+		IF_HTTPF_TOKEN('\r') HTTPF_STATE(3);
+		else HTTPF_STATE(0);
+		break;
+	case 3:
+		IF_HTTPF_TOKEN('\n') return 0;
+		IF_HTTPF_TOKEN('\r') HTTPF_STATE(1);
+		else HTTPF_STATE(0);
+		break;
+	}
+	return -1;
+}
+
+static int
 httpf_process_input(httpf_t *httpf, mblk_t *mp) {
 	int i, dlen = MBLKL(mp);
 	for(i=0; i<dlen; i++) {
@@ -134,28 +161,9 @@ httpf_process_input(httpf_t *httpf, mblk_t *mp) {
 		}
 
 		/* if the method is set, start looking for either \r\n\r\n or \n\n */
-#define HTTPF_STATE(a) httpf->httpf_sm = (a)
-#define IF_HTTPF_TOKEN(a) if (mp->b_rptr[i] == (a))
 		if(httpf->httpf_method > HTTPF_METHOD_UNSET) {
-			switch(httpf->httpf_sm) {
-				case 0:
-					IF_HTTPF_TOKEN('\r') HTTPF_STATE(1);
-					IF_HTTPF_TOKEN('\n') HTTPF_STATE(3);
-					break;
-				case 1:
-					IF_HTTPF_TOKEN('\n') HTTPF_STATE(2);
-					else HTTPF_STATE(0);
-					break;
-				case 2:
-					IF_HTTPF_TOKEN('\n') return 1;
-					IF_HTTPF_TOKEN('\r') HTTPF_STATE(3);
-					else HTTPF_STATE(0);
-					break;
-				case 3:
-					IF_HTTPF_TOKEN('\n') return 1;
-					IF_HTTPF_TOKEN('\r') HTTPF_STATE(1);
-					else HTTPF_STATE(0);
-					break;
+			if(httpf_progress_crlfcrlf_state(httpf, mp->b_rptr[i]) == 0) {
+				return 1;
 			}
 		}
 	}
