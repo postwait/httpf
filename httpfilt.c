@@ -211,28 +211,6 @@ httpf_detach_cb(sof_handle_t handle, void *cookie, cred_t *cr)
 	kmem_free(httpf, sizeof (httpf_t));
 }
 
-sof_rval_t
-httpf_bind_cb(sof_handle_t handle, void *cookie, struct sockaddr *name,
-    socklen_t *namelen, cred_t *cr)
-{
-	httpf_t *httpf;
-
-	_NOTE(ARGUNUSED(cr));
-
-	return (SOF_RVAL_CONTINUE);
-}
-
-sof_rval_t
-httpf_listen_cb(sof_handle_t handle, void *cookie, int *backlog, cred_t *cr)
-{
-	httpf_t *httpf = (httpf_t *)cookie;
-
-	_NOTE(ARGUNUSED(backlog, cr));
-
-	return (SOF_RVAL_CONTINUE);
-
-}
-
 /*
  * Outgoing connections are not of interest, so just bypass the filter.
  */
@@ -276,8 +254,6 @@ httpf_data_in_cb(sof_handle_t handle, void *cookie, mblk_t *mp, int flags,
 sof_ops_t httpf_ops = {
 	.sofop_attach_passive = httpf_attach_passive_cb,
 	.sofop_detach = httpf_detach_cb,
-	.sofop_bind = httpf_bind_cb,
-	.sofop_listen = httpf_listen_cb,
 	.sofop_data_in = httpf_data_in_cb,
 };
 
